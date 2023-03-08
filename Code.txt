@@ -1,0 +1,468 @@
+Input   
+	Store Option
+	Subt one
+	Skipcond 400
+	Jump elseIF1
+	Jump Equation //equations (1)
+elseIF1, Load Option //MAX (2)
+	subt two
+	Skipcond 400
+	Jump elseIF2
+	Jump Max 
+elseIF2, Load Option //MIN (3)
+	subt three
+	skipcond 400
+	Jump elseIF3
+	Jump Min
+elseIF3, Load Option //SIN (4)
+	subt four
+	skipcond 400
+	Jump elseIF4
+	Jump Sin
+elseIF4, Load Option //Cos (5)
+	subt five
+	skipcond 400
+	Jump elseIF5
+	Jump Cos
+elseIF5, Load Option //Tan (6)
+	subt six
+	skipcond 400
+	Jump elseIF6
+	Jump Tan
+elseIF6, Load Option //Triangle detection (7)
+	subt seven
+	skipcond 400
+	Halt
+	Jump Triangle
+
+Equation, Input
+	Store opsNum //number of operations
+	Clear
+	Store temp
+	Clear
+	Store i
+LoopE,  Load i
+	subt opsNum  //i < 10
+	skipcond 000
+	Jump End
+	Input /addition(1) or subtraction(2) or multiplcation(3) or division(4) or power(5)
+	Store Z
+	Load Z
+	subt one
+	skipcond 400
+	Jump ElseIF 
+	JNS Addition //addtion(1)
+	JNS Equation2
+	Jump NextE
+ElseIF, Load Z //subtraction(2)
+	subt two
+	skipcond 400
+	Jump ElseIF1
+	JNS Subtraction
+	JNS Equation2
+	Jump NextE
+ElseIF1, Load Z //multiplication(3)
+	subt three
+	skipcond 400
+	Jump ElseIF2
+	JNS MULT
+	JNS Equation2
+	Jump NextE
+ElseIF2, Load Z //division (4)
+	subt four
+	skipcond 400
+	Jump ElseIF3
+	JNS DIV
+	JNS Equation2
+	Jump NextE
+ElseIF3, Load Z //power(5)
+	subt five
+	skipcond 400
+	Jump End
+	JNS POW
+        JNS Equation2
+        Jump NextE
+NextE,  Load i
+	Add one
+        Store i
+	Jump LoopE
+	
+Addition, Hex 0
+	Input
+	Store X
+	Input
+	Store Y
+	Load X
+	Add Y
+	Store temp
+	JumpI Addition
+
+Subtraction, Hex 0
+	Input
+	Store X
+	Input
+	Store Y
+	Load X
+	Subt Y
+	Store temp
+	JumpI Subtraction
+
+MULT,   Hex 0
+	Input 
+	Store X
+	Input
+	Store Y
+        Load Y
+	Store ctr
+	Clear
+	Store sum
+LoopM,   Load sum
+	Add X
+	Store sum
+	Load ctr
+	Subt one
+	Store ctr
+	Skipcond 400
+	Jump LoopM
+	Load sum
+	Store temp
+	JumpI MULT
+
+MULTtemp, Hex 0 //ans = ans * temp
+	Clear
+	Store sum
+LoopMT, Load sum
+	Add ans
+	Store sum
+	Load temp
+	Subt one
+	Store temp
+	Skipcond 400
+	Jump LoopMT
+	Load sum
+	Store ans
+	JumpI MULTtemp
+
+DIV,    Hex 0
+	clear
+        store temp
+	Input
+        Store X
+        Input
+        Store Y
+	Skipcond 400 //if x / y. y must not be = 0
+	Jump False
+LoopD,  Load X  
+        Subt Y
+        Store X
+        Skipcond 800
+        Jump Endloop
+        Load temp
+	Add one
+        Store temp
+        Jump LoopD
+Incr, Load temp
+        Add one
+        Store temp
+        Load X
+        Subt Y
+        Store X
+Endloop, Load X
+        Skipcond 000
+        Jump Incr
+	JumpI DIV
+
+DIVtemp, Hex 0  //ans = ans / temp
+	clear
+	store quo
+	Load temp
+	Skipcond 400 //if x / y. y must not be = 0
+    Jump LoopDT
+	Jump False
+LoopDT,  Load ans  
+        Subt temp
+        Store ans
+        Skipcond 800
+        Jump EndloopT
+        Load quo
+	Add one
+        Store quo
+        Jump LoopDT
+IncrT,   Load quo
+        Add one
+        Store quo
+        Load ans
+        Subt temp
+        Store ans
+EndloopT, Load ans
+        Skipcond 000
+        Jump IncrT
+		Load quo
+		Store ans
+		JumpI DIVtemp
+
+POW,	Hex 0
+		Input
+		Store X
+		Store ctr
+		Input
+		Subt one
+		Store Y
+LoopPOW, Load Y
+  	  	Skipcond 800
+   	 	JumpI POW
+    	JnS MULTP
+   		Load ans
+   		Store X
+   		Load Y
+    	Subt one
+    	Store Y
+    	Jump LoopPOW
+    
+MULTP, Hex 0
+   	    Clear
+   	    Store ans
+LoopMULTP, Load X
+    	Skipcond 800
+    	JumpI MULTP
+    	Load ans
+    	Add ctr
+    	Store ans
+    	Load X
+    	Subt one
+   		Store X
+    	Jump LoopMULTP
+
+Equation2, Hex 0
+        Input /ans = ans + temp or ans = ans - temp or ans = ans * temp or ans = ans / temp
+	Store Z
+	Load Z
+	subt one
+	skipcond 400
+	Jump ElseIFT
+	Load ans
+	Add temp //ans = ans + temp (1)
+	Store ans
+	Jump EndEq2
+ElseIFT, Load Z //ans = ans - temp (2)
+	subt two
+	skipcond 400
+	Jump ElseIFT1
+	Load ans
+	subt temp
+	Store ans
+	Jump EndEq2
+ElseIFT1, Load Z //ans = ans * temp (3)
+	subt three
+	skipcond 400
+	Jump ElseIFT2
+	JNS MULTtemp
+	Jump EndEq2
+ElseIFT2, Load Z //ans = ans / temp (4)
+	subt four
+	skipcond 400
+	Jump End
+	JNS DIVtemp
+	Jump EndEq2
+EndEq2, JumpI Equation2	
+
+Sin,    Input
+	Store s1 //side 1 opposet
+	Input
+	Store s2 //hypotenus
+	Load s1
+	subt s2
+	skipcond 000
+    Jump False
+	Jump continues
+continues, JNS MULTTrig //s1 * 100
+	JNS DIVTrig //s1 * 100 / s2
+	Jump End
+
+Cos, Input
+	Store s1 //side 1 adjacent
+	Input
+	Store s2 //hypotenus
+	Load s1
+	subt s2
+	skipcond 000
+    Jump False
+	Jump continuec
+continuec, JNS MULTTrig //s1 * 100
+	 JNS DIVTrig //s1 * 100 / s2
+	Jump End
+
+Tan, Input
+	 Store s1
+     Input
+     Store s2
+     Load s2
+     skipcond 400
+     Jump continuet
+     Jump False
+continuet, JNS MULTTrig //s1 * 100
+	 JNS DIVTrig //s1 * 100 / s2
+     Jump End
+
+MULTTrig, Hex 0
+    Load hundred
+	Store ctr
+	Clear
+	Store sum
+LoopMTrig,   Load sum
+	Add s1
+	Store sum
+	Load ctr
+	Subt one
+	Store ctr
+	Skipcond 400
+	Jump LoopMTrig
+	Load sum
+	Store temp
+	JumpI MULTTrig
+    
+DIVTrig, Hex 0
+	Load s2
+	Skipcond 400 //if s1 / s2, s2 must not be = 0
+    Jump LoopDTrig
+	Jump False
+LoopDTrig,  Load temp 
+        Subt s2
+        Store temp
+        Skipcond 800
+        Jump EndloopTrig
+        Load ans
+		Add one
+        Store ans
+        Jump LoopDTrig
+IncrTrig, Load ans
+        Add one
+        Store ans
+        Load temp
+        Subt s2
+        Store temp
+EndloopTrig, Load temp
+        Skipcond 000
+        Jump IncrTrig
+		JumpI DIVTrig
+
+Triangle, Input
+	Store s1
+	Input
+	Store s2
+	Input
+	Store s3
+	Load s1
+	store X
+	Load X
+	Add s2
+	Store sum
+	Load sum
+	subt s3
+	skipcond 800
+	Jump False
+	Load s1
+	Store X
+	Load X
+	Add s3
+	Store sum
+	Load sum
+	subt s2
+	Skipcond 800
+	Jump False
+	Load s2
+	Store Y
+	Load Y
+	Add s3
+	Store sum
+	Load sum
+	subt s1
+	skipcond 800
+	Jump False
+	Load one
+	Store ans
+	Jump End
+
+Max,    Input
+	Store X
+LoopMax,   Load ctr
+	subt X
+	skipcond 000
+	Jump EndMax
+	Input
+	Store Y
+	Load Y
+	subt max
+	skipcond 800
+	Jump NextMax
+	Load Y
+	Store max
+NextMax, Load ctr
+	Add one
+	Store ctr
+	Jump LoopMax
+
+EndMax, Load max
+	Store ans
+	Jump End
+
+Min,    Input
+	Store X
+LoopMin,   Load ctr
+	subt X
+	skipcond 000
+	Jump EndMin
+	Input
+	Store Y
+	Load Y
+	subt min
+	skipcond 000
+	Jump NextMin
+	Load Y
+	Store min
+NextMin, Load ctr
+	Add one
+	store ctr
+	Jump LoopMin
+
+EndMin, Load min
+	store ans
+	Jump End
+
+False,  Load invalid
+	Store ans
+	Jump End
+
+End,    Load ans   
+	Output
+	Halt
+
+X, DEC 0
+Y, DEC 0
+Z, DEC 0
+s1, DEC 0
+s2, DEC 0
+s3, DEC 0
+
+opsNum, DEC 0
+Option, DEC 0
+sum, DEC 0
+max, DEC 0
+min, DEC 9999
+ctr, DEC 0
+quo, DEC 0
+
+i, DEC 0
+ans, DEC 0
+temp, DEC 0
+one, DEC 1
+two, DEC 2
+three, DEC 3
+four, DEC 4
+five, DEC 5
+six, DEC 6
+seven, DEC 7
+hundred, DEC 100
+invalid, DEC -1
+
+End
